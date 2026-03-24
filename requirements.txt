@@ -1,0 +1,84 @@
+# ============================================================
+# Lapsation KMS v2.0 — requirements.txt
+# Windows-compatible | Python 3.10 / 3.11 / 3.12
+#
+# Key compatibility research:
+#   chromadb >=1.0 (Rust) is INCOMPATIBLE with langchain-community Chroma
+#   → Use langchain-chroma + chromadb 0.6.x (last Python client)
+#   torch 2.x range (latest stable 2.6.x) — only 2.3-2.7 range is pinned
+#   transformers 5.x requires torch >=2.6
+#   sentence-transformers 3.x requires transformers >=4.41
+#   pydantic pinned <2.12 for chromadb compat on Python 3.10-3.12
+#
+# run.bat installs in groups: torch first, then HF, then chroma, etc.
+# ============================================================
+
+# ── PyTorch CPU ─────────────────────────────────────────────
+torch>=2.3.0,<2.7
+
+# ── HuggingFace stack ───────────────────────────────────────
+transformers>=4.41.0,<5.0
+tokenizers>=0.19.0,<0.22
+accelerate>=0.30.0
+safetensors>=0.4.3
+huggingface_hub>=0.23.0
+sentence-transformers>=3.0.0,<4.0
+
+# ── Vector Search ───────────────────────────────────────────
+# numpy wheel matrix (all --only-binary installs, no C compiler needed):
+#   Python 3.10/3.11/3.12 → numpy 1.26.4 (cp310/cp311/cp312 wheels on PyPI)
+#   Python 3.13           → numpy >=2.1.0 (first release with cp313 Windows wheels)
+#   numpy 1.x has NO cp313 wheel — installing it on Py 3.13 triggers meson build + compiler error
+# run.bat handles version detection and installs the correct wheel automatically.
+# requirements.txt uses a broad range; run.bat pins the right version per Python version.
+numpy>=1.26.0
+# chromadb 0.6.x = last fully-Python client (pre-Rust 1.x rewrite)
+# langchain-chroma is the correct bridge (NOT langchain-community.vectorstores.Chroma)
+# chromadb 0.6 uses pydantic.v1 internally — works on Python 3.13, breaks on 3.14+
+chromadb>=0.6.0,<0.7.0
+langchain-chroma>=0.1.4,<0.3
+faiss-cpu>=1.8.0
+
+# ── Sparse Search ───────────────────────────────────────────
+rank-bm25>=0.2.2
+
+# ── LangChain 0.3.x (pydantic v2 compatible) ────────────────
+langchain>=0.3.0,<0.4
+langchain-community>=0.3.0,<0.4
+langchain-core>=0.3.0,<0.4
+langchain-huggingface>=0.1.0,<0.3
+langchain-text-splitters>=0.3.0,<0.4
+
+# ── Lapsation Model ─────────────────────────────────────────
+xgboost>=2.1.0
+scikit-learn>=1.4.0
+joblib>=1.4.0
+pandas>=2.1.0
+pyarrow>=15.0.0
+shap>=0.45.0
+
+# ── FastAPI + ASGI ──────────────────────────────────────────
+fastapi[standard]>=0.110.0,<0.200
+uvicorn[standard]>=0.29.0
+python-multipart>=0.0.9
+
+# ── Pydantic (pinned <2.12 for chromadb compat on Py 3.10-3.12) ──
+pydantic>=2.6.0,<2.12
+pydantic-settings>=2.3.0,<3.0
+
+# ── HTTP / async ────────────────────────────────────────────
+requests>=2.31.0
+aiohttp>=3.9.0,<4.0
+anyio>=4.3.0,<5.0
+httpx>=0.27.0
+
+# ── Utilities ────────────────────────────────────────────────
+python-dotenv>=1.0.0
+PyYAML>=6.0
+colorama>=0.4.6
+tqdm>=4.66.0
+pillow>=10.0.0
+psutil>=6.0.0
+tenacity>=8.2.0,<9.0
+rich>=13.0.0
+scipy>=1.12.0,<2.0
